@@ -31,28 +31,32 @@
     var progressBarFull = document.querySelector("#unity-progress-bar-full");
     var fullscreenButton = document.querySelector("#unity-fullscreen-button");
     var warningBanner = document.querySelector("#unity-warning");
+
     function unityShowBanner(msg, type) {
       return;
     }
+
     // Sửa đường dẫn để đảm bảo nó hoạt động trên GitHub Pages
     var buildUrl = "./Build";
     var loaderUrl = buildUrl + "/WEB.loader.js";
     var config = {
-      dataUrl: buildUrl + "/WEB.data.br",
-      frameworkUrl: buildUrl + "/WEB.framework.js.br",
-      codeUrl: buildUrl + "/WEB.wasm.br",
+      dataUrl: buildUrl + "/WEB.data", // Đã xóa phần mở rộng .br
+      frameworkUrl: buildUrl + "/WEB.framework.js", // Đã xóa phần mở rộng .br
+      codeUrl: buildUrl + "/WEB.wasm", // Đã xóa phần mở rộng .br
       streamingAssetsUrl: "./StreamingAssets",
       companyName: "DefaultCompany",
       productName: "My project (1)",
       productVersion: "0.1.0",
       showBanner: unityShowBanner,
     };
+
     // By default, Unity keeps WebGL canvas render target size matched with
     // the DOM size of the canvas element (scaled by window.devicePixelRatio)
     // Set this to false if you want to decouple this synchronization from
     // happening inside the engine, and you would instead like to size up
     // the canvas DOM size and WebGL render target sizes yourself.
     // config.matchWebGLToCanvasSize = false;
+
     if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
       // Mobile device style: fill the whole browser client area with the game canvas:
       var meta = document.createElement("meta");
@@ -70,7 +74,9 @@
       canvas.style.width = "1200px";
       canvas.style.height = "750px";
     }
+
     loadingBar.style.display = "block";
+
     var script = document.createElement("script");
     script.src = loaderUrl;
     script.onload = () => {
