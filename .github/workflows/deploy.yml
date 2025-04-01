@@ -21,6 +21,7 @@ jobs:
           
       - name: Install dependencies
         run: |
+          cd WEB  # Chuyển vào thư mục chứa package.json
           if [ -f package-lock.json ]; then
             npm ci
           else
@@ -28,14 +29,17 @@ jobs:
           fi
         
       - name: Build project
-        run: npm run build
+        run: |
+          cd WEB
+          npm run build
 
       - name: Verify build output
-        run: ls -la
+        run: ls -la WEB
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: root # Đổi nếu thư mục build đầu ra là docs hoặc khác
+          folder: WEB  # Deploy từ thư mục chứa file build
           branch: gh-pages
           token: ${{ secrets.GITHUB_TOKEN }}
+          clean: true
