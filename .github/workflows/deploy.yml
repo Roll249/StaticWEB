@@ -25,10 +25,25 @@ jobs:
         
       - name: Build project manually
         run: |
+          # Tạo thư mục build tạm thời
+          mkdir -p build_temp
+          
+          # Sao chép các file từ thư mục gốc (ngoại trừ node_modules và thư mục build_temp)
+          cp -r $(ls -A | grep -v "node_modules" | grep -v "build_temp" | grep -v "WEB") build_temp/
+          
+          # Sao chép các file từ thư mục WEB (nếu cần)
+          if [ -d "WEB" ]; then
+            cp -r WEB/* build_temp/
+          fi
+          
+          # Tạo thư mục WEB/dist nếu nó không tồn tại
           mkdir -p WEB/dist
-          cp -r $(ls -A | grep -v "WEB") WEB/dist/
-          cp -r WEB/* WEB/dist/
-          rm -rf WEB/dist/dist
+          
+          # Di chuyển nội dung từ build_temp vào WEB/dist
+          cp -r build_temp/* WEB/dist/
+          
+          # Dọn dẹp
+          rm -rf build_temp
           rm -rf WEB/dist/node_modules
           
       - name: Verify build output
