@@ -17,23 +17,19 @@ jobs:
           
       - name: Install dependencies
         run: |
-          cd WEB  # Chuyển vào thư mục chứa package.json
           if [ -f package-lock.json ]; then
             npm ci
           else
             npm install
           fi
         
-      - name: Fix build script
+      - name: Build project manually
         run: |
-          cd WEB
-          # Sửa lại script build trong package.json
-          sed -i 's/mkdir -p dist && cp -r \* dist\/ && rm -rf dist\/node_modules/mkdir -p dist \&\& cp -r $(ls -A | grep -v "dist") dist\/ \&\& rm -rf dist\/node_modules/' package.json
-      
-      - name: Build project
-        run: |
-          cd WEB
-          npm run build
+          mkdir -p WEB/dist
+          cp -r $(ls -A | grep -v "WEB") WEB/dist/
+          cp -r WEB/* WEB/dist/
+          rm -rf WEB/dist/dist
+          rm -rf WEB/dist/node_modules
           
       - name: Verify build output
         run: ls -la WEB/dist
@@ -41,7 +37,7 @@ jobs:
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: WEB/dist  # Deploy từ thư mục dist
+          folder: WEB/dist  # Deploy từ thư mục dist trong WEB
           branch: gh-pages
           token: ${{ secrets.GITHUB_TOKEN }}
           clean: true
