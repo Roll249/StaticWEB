@@ -14,39 +14,6 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v3
 
-      # Step 2: Sửa các đường dẫn trong file index.html và giải nén file .br
-      - name: Fix Unity WebGL files
-        run: |
-          # Sửa đường dẫn trong index.html
-          sed -i 's/href="TemplateData\//href="\.\/TemplateData\//g' WEB/index.html
-          sed -i 's/var buildUrl = "Build";/var buildUrl = "\.\/Build";/g' WEB/index.html
-          sed -i 's/streamingAssetsUrl: "StreamingAssets"/streamingAssetsUrl: "\.\/StreamingAssets"/g' WEB/index.html
-
-          # Xóa phần mở rộng .br từ URL trong index.html
-          sed -i 's/WEB.data.br/WEB.data/g' WEB/index.html
-          sed -i 's/WEB.framework.js.br/WEB.framework.js/g' WEB/index.html
-          sed -i 's/WEB.wasm.br/WEB.wasm/g' WEB/index.html
-
-          # Kiểm tra và giải nén các file .br nếu tồn tại
-          if [ -f "WEB/Build/WEB.data.br" ]; then
-            echo "Found .br files. Installing brotli..."
-            sudo apt-get update && sudo apt-get install -y brotli
-            brotli -d WEB/Build/WEB.data.br -o WEB/Build/WEB.data
-            brotli -d WEB/Build/WEB.framework.js.br -o WEB/Build/WEB.framework.js
-            brotli -d WEB/Build/WEB.wasm.br -o WEB/Build/WEB.wasm
-            echo "Decompressed .br files."
-            # Xóa các file .br sau khi giải nén
-            rm WEB/Build/WEB.data.br
-            rm WEB/Build/WEB.framework.js.br
-            rm WEB/Build/WEB.wasm.br
-            echo "Removed .br files."
-          else
-            echo "No .br files found. Skipping decompression."
-          fi
-
-          # Thêm file .nojekyll để tránh lỗi với GitHub Pages
-          touch WEB/.nojekyll
-
       # Step 3: Kiểm tra nội dung thư mục Build
       - name: Verify WEB directory content
         run: ls -la WEB/Build
