@@ -1,19 +1,15 @@
 name: Deploy VRWEB to GitHub Pages
-
 on:
   push:
     branches:
       - main
-
 jobs:
   deploy:
     name: Deploy to GitHub Pages
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout source code
         uses: actions/checkout@v3
-
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
@@ -28,18 +24,24 @@ jobs:
             npm install
           fi
         
+      - name: Fix build script
+        run: |
+          cd WEB
+          # Sửa lại script build trong package.json
+          sed -i 's/mkdir -p dist && cp -r \* dist\/ && rm -rf dist\/node_modules/mkdir -p dist \&\& cp -r $(ls -A | grep -v "dist") dist\/ \&\& rm -rf dist\/node_modules/' package.json
+      
       - name: Build project
         run: |
           cd WEB
           npm run build
-
+          
       - name: Verify build output
-        run: ls -la WEB
-
+        run: ls -la WEB/dist
+        
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: WEB  # Deploy từ thư mục chứa file build
+          folder: WEB/dist  # Deploy từ thư mục dist
           branch: gh-pages
           token: ${{ secrets.GITHUB_TOKEN }}
           clean: true
