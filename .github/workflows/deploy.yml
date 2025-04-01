@@ -20,14 +20,26 @@ jobs:
           node-version: '16'
           
       - name: Install dependencies
-        run: npm ci
+        run: |
+          cd WEB  # Chuyển vào thư mục chứa package.json
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
         
-      - name: Build
-        run: npm run build
+      - name: Build project
+        run: |
+          cd WEB
+          npm run build
+
+      - name: Verify build output
+        run: ls -la WEB
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: dist # The folder the action should deploy (change to your build output directory)
-          branch: gh-pages # The branch the action should deploy to
-          token: ${{ secrets.GITHUB_TOKEN }} # GitHub automatically provides this token
+          folder: WEB  # Deploy từ thư mục chứa file build
+          branch: gh-pages
+          token: ${{ secrets.GITHUB_TOKEN }}
+          clean: true
