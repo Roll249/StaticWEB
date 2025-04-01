@@ -10,49 +10,14 @@ jobs:
     steps:
       - name: Checkout source code
         uses: actions/checkout@v3
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-          
-      - name: Install dependencies
-        run: |
-          if [ -f package-lock.json ]; then
-            npm ci
-          else
-            npm install
-          fi
         
-      - name: Build project manually
-        run: |
-          # Tạo thư mục build tạm thời
-          mkdir -p build_temp
-          
-          # Sao chép các file từ thư mục gốc (ngoại trừ node_modules và thư mục build_temp)
-          cp -r $(ls -A | grep -v "node_modules" | grep -v "build_temp" | grep -v "WEB") build_temp/
-          
-          # Sao chép các file từ thư mục WEB (nếu cần)
-          if [ -d "WEB" ]; then
-            cp -r WEB/* build_temp/
-          fi
-          
-          # Tạo thư mục WEB/dist nếu nó không tồn tại
-          mkdir -p WEB/dist
-          
-          # Di chuyển nội dung từ build_temp vào WEB/dist
-          cp -r build_temp/* WEB/dist/
-          
-          # Dọn dẹp
-          rm -rf build_temp
-          rm -rf WEB/dist/node_modules
-          
-      - name: Verify build output
-        run: ls -la WEB/dist
+      - name: List directory structure
+        run: find . -type f -not -path "*/\.*" -not -path "*/node_modules/*" | sort
         
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: WEB/dist  # Deploy từ thư mục dist trong WEB
+          folder: WEB  # Deploy trực tiếp từ thư mục WEB chứa Unity WebGL build
           branch: gh-pages
           token: ${{ secrets.GITHUB_TOKEN }}
           clean: true
